@@ -173,12 +173,12 @@ const UserButton = ({
 
 const SelectStudent = ({
   students,
-  defaultValue,
+  value,
   onValueChange,
   label = "Select a student",
 }: {
   students: { id: string; name: string; avatar?: string; initials?: string }[];
-  defaultValue?: {
+  value?: {
     id: string;
     name: string;
     avatar?: string;
@@ -196,9 +196,9 @@ const SelectStudent = ({
 }) => (
   <Field className="w-full">
     <Select
-      defaultValue={defaultValue ?? students[0]}
       items={students.map((s) => ({ label: s.name, value: s }))}
       onValueChange={onValueChange}
+      value={value ?? students[0]}
     >
       <SelectTrigger className="rounded-b-xl bg-accent/50 py-6 font-semibold text-md backdrop-blur-md">
         <SelectValue>
@@ -228,9 +228,7 @@ const SelectStudent = ({
 );
 
 export default function ParentBoard() {
-  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(
-    studentLists[0] ?? null
-  );
+  const [selectedStudent, setSelectedStudent] = useState(studentLists[0]);
   const navsLink: {
     id: string;
     label: string;
@@ -269,8 +267,13 @@ export default function ParentBoard() {
         <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-lg">
           <SelectStudent
             label="Choose a student"
-            onValueChange={(student) => setSelectedStudent(student)}
+            onValueChange={(student) => {
+              if (student) {
+                setSelectedStudent(student);
+              }
+            }}
             students={studentLists}
+            value={selectedStudent}
           />
           <nav
             className={
@@ -279,7 +282,11 @@ export default function ParentBoard() {
           >
             <TabsList>
               {navsLink.map((nav) => (
-                <TabsTrigger key={nav.id} value={nav.id}>
+                <TabsTrigger
+                  className="rounded-full"
+                  key={nav.id}
+                  value={nav.id}
+                >
                   {nav.label}
                 </TabsTrigger>
               ))}
