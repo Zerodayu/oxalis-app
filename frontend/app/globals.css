@@ -130,8 +130,8 @@
   --chart-3: oklch(0.6 0.118 184.704);
   --chart-4: oklch(0.511 0.096 186.391);
   --chart-5: oklch(0.437 0.078 188.216);
-  --chart-male: var(--color-blue-600);
-  --chart-female: var(--color-pink-500);
+  --chart-male: var(--color-blue-400);
+  --chart-female: var(--color-pink-400);
   --sidebar: oklch(0.218 0.008 223.9);
   --sidebar-foreground: oklch(0.987 0.002 197.1);
   --sidebar-primary: oklch(0.715 0.143 215.221);
