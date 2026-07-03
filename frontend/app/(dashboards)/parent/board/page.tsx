@@ -4,12 +4,15 @@ import UserAvatar from "boring-avatars";
 import {
   BadgeCheckIcon,
   BellIcon,
+  Bolt,
   ChevronsUpDownIcon,
   CreditCardIcon,
+  House,
   LogOutIcon,
+  type LucideIcon,
   SparklesIcon,
 } from "lucide-react";
-import Link from "next/link";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -31,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const user = {
   name: "testUser",
@@ -49,63 +53,32 @@ const studentLists = [
   },
 ];
 
-const navsLink = [
-  {
-    label: "Home",
-    icon: "icon",
-    url: "#home",
-  },
-  {
-    label: "Settings",
-    icon: "icon",
-    url: "#settings",
-  },
-];
-
-export default function ParentBoard() {
-  return (
-    <section className="flex h-screen w-full flex-col items-center gap-4 p-4">
-      <Navs navs={navsLink} />
-
-      <section className="h-screen w-full border-2">
-        {" "}
-        blank for now{" "}
-        <UserAvatar
-          className="object-fill"
-          name={user.name}
-          size="100%"
-          variant="marble"
-        />
-      </section>
-    </section>
-  );
-}
-
-const Navs = ({
-  className,
-  navs = [],
+const HomeTab = ({
+  student,
 }: {
-  className?: string;
-  navs: { label: string; icon: React.ReactNode; url: string }[];
+  student:
+    | {
+        id: string;
+        name: string;
+        avatar?: string;
+      }
+    | undefined;
 }) => (
-  <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-lg">
-    <SelectStudent
-      label="Choose a student"
-      onValueChange={(student) => console.log("Selected:", student)}
-      students={studentLists}
-    />
-    <nav
-      className={`${className} flex w-full items-center justify-evenly gap-6 rounded-t-xl rounded-b-4xl bg-accent/70 p-4 backdrop-blur-md`}
-    >
-      {navs.map((nav) => (
-        <Link href={nav.url} key={nav.label}>
-          {nav.label}
-        </Link>
-      ))}
-      <Separator orientation="vertical" />
-      <UserButton email={user.email} username={user.name} />
-    </nav>
-  </div>
+  <section>
+    <div>
+      <p>
+        {student
+          ? `Home Tab — ${student.name}`
+          : "Home Tab — no student selected"}
+      </p>
+    </div>
+  </section>
+);
+
+const SettingsTab = () => (
+  <section>
+    <div>Settingss Tab</div>
+  </section>
 );
 
 const UserButton = ({
@@ -121,7 +94,7 @@ const UserButton = ({
     <DropdownMenuTrigger
       nativeButton={false}
       render={
-        <div className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary/50 p-2 hover:bg-secondary/70 aria-expanded:bg-secondary/70">
+        <div className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary/50 p-2 hover:bg-secondary/70 aria-expanded:bg-secondary/50">
           <Avatar className="p-0">
             <AvatarImage alt={username} src={avatar} />
             <AvatarFallback className="p-0 [&_svg]:size-full">
@@ -227,7 +200,7 @@ const SelectStudent = ({
       items={students.map((s) => ({ label: s.name, value: s }))}
       onValueChange={onValueChange}
     >
-      <SelectTrigger className="rounded-b-xl bg-accent/70 py-6 font-semibold text-md backdrop-blur-md">
+      <SelectTrigger className="rounded-b-xl bg-accent/50 py-6 font-semibold text-md backdrop-blur-md">
         <SelectValue>
           {(item: (typeof students)[number]) => (
             <span className="flex items-center gap-2">
@@ -253,3 +226,69 @@ const SelectStudent = ({
     </Select>
   </Field>
 );
+
+export default function ParentBoard() {
+  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(
+    studentLists[0] ?? null
+  );
+  const navsLink: {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    url: string;
+    component: React.ReactNode;
+  }[] = [
+    {
+      id: "1",
+      label: "Home",
+      icon: House,
+      url: "#home",
+      component: <HomeTab student={selectedStudent} />,
+    },
+    {
+      id: "2",
+      label: "Settings",
+      icon: Bolt,
+      url: "#settings",
+      component: <SettingsTab />,
+    },
+  ];
+
+  return (
+    <section className="flex h-screen w-full flex-col items-center justify-center gap-4 p-4">
+      <Tabs
+        className="w-full items-center justify-start"
+        defaultValue={navsLink[0]?.id}
+      >
+        {navsLink.map((nav) => (
+          <TabsContent key={nav.id} value={nav.id}>
+            {nav.component}
+          </TabsContent>
+        ))}
+
+        <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-lg">
+          <SelectStudent
+            label="Choose a student"
+            onValueChange={(student) => setSelectedStudent(student)}
+            students={studentLists}
+          />
+          <nav
+            className={
+              "flex w-full items-center justify-evenly gap-6 rounded-t-xl rounded-b-4xl bg-accent/50 p-4 backdrop-blur-md"
+            }
+          >
+            <TabsList>
+              {navsLink.map((nav) => (
+                <TabsTrigger key={nav.id} value={nav.id}>
+                  {nav.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <Separator orientation="vertical" />
+            <UserButton email={user.email} username={user.name} />
+          </nav>
+        </div>
+      </Tabs>
+    </section>
+  );
+}
