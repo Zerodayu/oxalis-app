@@ -9,9 +9,9 @@ import {
   CreditCardIcon,
   House,
   LogOutIcon,
-  type LucideIcon,
   SparklesIcon,
 } from "lucide-react";
+import type React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -232,21 +232,21 @@ export default function ParentBoard() {
   const navsLink: {
     id: string;
     label: string;
-    icon: LucideIcon;
+    icon: React.ReactNode;
     url: string;
     component: React.ReactNode;
   }[] = [
     {
       id: "1",
       label: "Home",
-      icon: House,
+      icon: <House />,
       url: "#home",
       component: <HomeTab student={selectedStudent} />,
     },
     {
       id: "2",
       label: "Settings",
-      icon: Bolt,
+      icon: <Bolt />,
       url: "#settings",
       component: <SettingsTab />,
     },
@@ -287,6 +287,7 @@ export default function ParentBoard() {
                   key={nav.id}
                   value={nav.id}
                 >
+                  {nav.icon}
                   {nav.label}
                 </TabsTrigger>
               ))}

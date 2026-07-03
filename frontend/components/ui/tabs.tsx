@@ -45,7 +45,7 @@ const tabsListVariants = tv({
     variant: {
       default: {
         base: ["rounded-full"],
-        indicator: ["-z-1 rounded-full bg-accent"],
+        indicator: ["-z-1 rounded-full bg-primary"],
       },
       underline: {
         base: [
@@ -115,6 +115,7 @@ export const TabsTrigger = (
         "data-disabled:pointer-events-none data-disabled:opacity-64",
         "[&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0",
         "motion-reduce:transition-none!",
+        "transition-all duration-300 ease-linear",
         className
       )}
       data-slot="tabs-trigger"
