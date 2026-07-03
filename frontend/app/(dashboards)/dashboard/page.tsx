@@ -251,7 +251,7 @@ const TableSection = ({
         <TableRow key={user.id}>
           <TableCell className="pr-8 font-semibold">{user.name}</TableCell>
           <TableCell
-            className={`text-center ${user.gender === "Male" ? "text-chart-1" : "text-chart-5"}`}
+            className={`text-center ${user.gender === "Male" ? "text-chart-male" : "text-chart-female"}`}
           >
             {user.gender}
           </TableCell>
@@ -268,7 +268,7 @@ const TableSection = ({
             </Badge>
           </TableCell>
           <TableCell className="text-center">
-            <Badge size="lg" variant={user.timeout ? "success" : "outline"}>
+            <Badge size="lg" variant={user.timeout ? "info" : "outline"}>
               {user.timeout ? (
                 <>
                   <CircleCheck />

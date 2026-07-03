@@ -41,11 +41,11 @@ export function ChartPieDonutText({
     },
     male: {
       label: "Male",
-      color: "var(--chart-2)",
+      color: "var(--chart-male)",
     },
     female: {
       label: "Female",
-      color: "var(--chart-5)",
+      color: "var(--chart-female)",
     },
   } satisfies ChartConfig;
 
@@ -112,11 +112,11 @@ export function ChartPieDonutText({
         </ChartContainer>
         <div className="flex items-center justify-center gap-2 font-medium leading-none">
           <Badge variant="outline">
-            <Status className="bg-chart-1" />
+            <Status className="bg-chart-male" />
             Male — {maleCount}
           </Badge>
           <Badge variant="outline">
-            <Status className="bg-chart-5" />
+            <Status className="bg-chart-female" />
             Female — {femaleCount}
           </Badge>
         </div>
