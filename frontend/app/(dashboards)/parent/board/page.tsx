@@ -35,43 +35,20 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type Student, studentLists, user } from "@/utils/types/student-types";
 
-const user = {
-  name: "testUser",
-  email: "testuser@email.com",
-  avatar: "avatar",
-};
-
-const studentLists = [
-  {
-    id: "1",
-    name: "Alex Johnson",
-  },
-  {
-    id: "2",
-    name: "Sarah Chen",
-  },
-];
-
-const HomeTab = ({
-  student,
-}: {
-  student:
-    | {
-        id: string;
-        name: string;
-        avatar?: string;
-      }
-    | undefined;
-}) => (
-  <section>
-    <div>
-      <p>
-        {student
-          ? `Home Tab — ${student.name}`
-          : "Home Tab — no student selected"}
-      </p>
-    </div>
+const HomeTab = ({ student }: { student: Student | undefined }) => (
+  <section className="space-y-2">
+    {student ? (
+      <>
+        <p className="font-semibold text-lg">{student.name}</p>
+        <p>Section: {student.data.section}</p>
+        <p>Time in: {student.data.timein}</p>
+        <p>Time out: {student.data.timeout}</p>
+      </>
+    ) : (
+      <p>No student selected</p>
+    )}
   </section>
 );
 
@@ -177,21 +154,9 @@ const SelectStudent = ({
   onValueChange,
   label = "Select a student",
 }: {
-  students: { id: string; name: string; avatar?: string; initials?: string }[];
-  value?: {
-    id: string;
-    name: string;
-    avatar?: string;
-    initials?: string;
-  };
-  onValueChange?: (
-    value: {
-      id: string;
-      name: string;
-      avatar?: string;
-      initials?: string;
-    } | null
-  ) => void;
+  students: Student[];
+  value?: Student;
+  onValueChange?: (value: Student | null) => void;
   label?: string;
 }) => (
   <Field className="w-full">
@@ -202,7 +167,7 @@ const SelectStudent = ({
     >
       <SelectTrigger className="rounded-b-xl bg-accent/50 py-6 font-semibold text-md backdrop-blur-md">
         <SelectValue>
-          {(item: (typeof students)[number]) => (
+          {(item: Student) => (
             <span className="flex items-center gap-2">
               <UserAvatar name={item.name} variant="beam" />
               <span>{item?.name}</span>
@@ -233,21 +198,18 @@ export default function ParentBoard() {
     id: string;
     label: string;
     icon: React.ReactNode;
-    url: string;
     component: React.ReactNode;
   }[] = [
     {
       id: "1",
       label: "Home",
       icon: <House />,
-      url: "#home",
       component: <HomeTab student={selectedStudent} />,
     },
     {
       id: "2",
       label: "Settings",
       icon: <Bolt />,
-      url: "#settings",
       component: <SettingsTab />,
     },
   ];
