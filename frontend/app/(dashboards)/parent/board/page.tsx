@@ -2,18 +2,25 @@
 
 import UserAvatar from "boring-avatars";
 import {
+  ArrowUpRight,
   BadgeCheckIcon,
+  BadgeInfo,
   BellIcon,
-  Bolt,
   ChevronsUpDownIcon,
   CreditCardIcon,
   House,
   LogOutIcon,
+  Megaphone,
+  NotebookTabs,
   SparklesIcon,
+  UserCheck,
+  UserMinus,
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +32,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Field } from "@/components/ui/field";
 import {
+  Frame,
+  FrameDescription,
+  FrameFooter,
+  FrameHeader,
+  FramePanel,
+  FrameTitle,
+} from "@/components/ui/frame";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -34,27 +49,82 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useTabs,
+} from "@/components/ui/tabs";
 import { type Student, studentLists, user } from "@/utils/types/student-types";
 
-const HomeTab = ({ student }: { student: Student | undefined }) => (
-  <section className="space-y-2">
-    {student ? (
-      <>
-        <p className="font-semibold text-lg">{student.name}</p>
-        <p>Section: {student.data.section}</p>
-        <p>Time in: {student.data.timein}</p>
-        <p>Time out: {student.data.timeout}</p>
-      </>
-    ) : (
-      <p>No student selected</p>
-    )}
+const HomeTab = ({ student }: { student: Student | undefined }) => {
+  const tabs = useTabs();
+  return (
+    <section className="grid w-screen grid-cols-1 gap-6 px-4 sm:w-4xl sm:grid-cols-2">
+      {student ? (
+        <>
+          <Frame className="w-full">
+            <FrameHeader>
+              <FrameTitle className="flex items-center gap-2">
+                <BadgeInfo />
+                Today's Timestamp
+              </FrameTitle>
+              <FrameDescription>Timestamp for {student.name}</FrameDescription>
+            </FrameHeader>
+            <span className="grid grid-cols-2">
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserCheck />
+                  Time-in
+                </h2>
+                <Badge className="font-mono" size="lg" variant="success">
+                  {student.data.timein ? student.data.timein : "—"}
+                </Badge>
+              </FramePanel>
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserMinus />
+                  Time-out
+                </h2>
+                <Badge className="font-mono" size="lg" variant="info">
+                  {student.data.timeout ? student.data.timeout : "—"}
+                </Badge>
+              </FramePanel>
+            </span>
+            <FrameFooter className="flex items-center justify-end">
+              <p className="text-muted-foreground text-sm">
+                <Button onClick={() => tabs.setValue("2")}>
+                  See full Records
+                  <ArrowUpRight />
+                </Button>
+              </p>
+            </FrameFooter>
+          </Frame>
+
+          <div>
+            <p className="font-semibold text-lg">{student.name}</p>
+            <p>Section: {student.data.section}</p>
+            <p>Time in: {student.data.timein}</p>
+            <p>Time out: {student.data.timeout}</p>
+          </div>
+        </>
+      ) : (
+        <p>No student selected</p>
+      )}
+    </section>
+  );
+};
+
+const RecordsTab = () => (
+  <section>
+    <div>Student Records Tab</div>
   </section>
 );
 
-const SettingsTab = () => (
+const MemoTab = () => (
   <section>
-    <div>Settingss Tab</div>
+    <div>Announcements Tab</div>
   </section>
 );
 
@@ -72,7 +142,7 @@ const UserButton = ({
       nativeButton={false}
       render={
         <div className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary/50 p-2 hover:bg-secondary/70 aria-expanded:bg-secondary/50">
-          <Avatar className="p-0">
+          <Avatar className="">
             <AvatarImage alt={username} src={avatar} />
             <AvatarFallback className="p-0 [&_svg]:size-full">
               <UserAvatar
@@ -208,17 +278,25 @@ export default function ParentBoard() {
     },
     {
       id: "2",
-      label: "Settings",
-      icon: <Bolt />,
-      component: <SettingsTab />,
+      label: "Records",
+      icon: <NotebookTabs />,
+      component: <RecordsTab />,
+    },
+    {
+      id: "3",
+      label: "Memo",
+      icon: <Megaphone />,
+      component: <MemoTab />,
     },
   ];
+  const [activeTab, setActiveTab] = useState(navsLink[0]?.id);
 
   return (
     <section className="flex h-screen w-full flex-col items-center justify-center gap-4 p-4">
       <Tabs
         className="w-full items-center justify-start"
-        defaultValue={navsLink[0]?.id}
+        onValueChange={(e) => setActiveTab(e.value)}
+        value={activeTab}
       >
         {navsLink.map((nav) => (
           <TabsContent key={nav.id} value={nav.id}>
@@ -226,7 +304,7 @@ export default function ParentBoard() {
           </TabsContent>
         ))}
 
-        <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-lg">
+        <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-2xl">
           <SelectStudent
             label="Choose a student"
             onValueChange={(student) => {
@@ -245,12 +323,12 @@ export default function ParentBoard() {
             <TabsList>
               {navsLink.map((nav) => (
                 <TabsTrigger
-                  className="rounded-full"
+                  className="rounded-full px-4 aria-selected:px-6"
                   key={nav.id}
                   value={nav.id}
                 >
                   {nav.icon}
-                  {nav.label}
+                  <span className="hidden sm:flex">{nav.label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>

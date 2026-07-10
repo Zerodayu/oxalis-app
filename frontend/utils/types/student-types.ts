@@ -6,6 +6,7 @@ export interface Student {
   name: string;
 }
 
+// sample data
 export const user = {
   name: "testUser",
   email: "testuser@email.com",
