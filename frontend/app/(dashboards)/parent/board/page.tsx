@@ -70,7 +70,9 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
                 <BadgeInfo />
                 Today's Timestamp
               </FrameTitle>
-              <FrameDescription>Timestamp for {student.name}</FrameDescription>
+              <FrameDescription>
+                Attendance of <u>{student.name}</u> for today
+              </FrameDescription>
             </FrameHeader>
             <span className="grid grid-cols-2">
               <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
@@ -101,13 +103,80 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
               </p>
             </FrameFooter>
           </Frame>
-
-          <div>
-            <p className="font-semibold text-lg">{student.name}</p>
-            <p>Section: {student.data.section}</p>
-            <p>Time in: {student.data.timein}</p>
-            <p>Time out: {student.data.timeout}</p>
-          </div>
+          <Frame className="w-full">
+            <FrameHeader>
+              <FrameTitle className="flex items-center gap-2">
+                <BadgeInfo />
+                Today's Timestamp
+              </FrameTitle>
+              <FrameDescription>Timestamp for {student.name}</FrameDescription>
+            </FrameHeader>
+            <span className="grid grid-cols-2">
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserCheck />
+                  Time-in
+                </h2>
+                <Badge className="font-mono" size="lg" variant="success">
+                  {student.data.timein ? student.data.timein : "—"}
+                </Badge>
+              </FramePanel>
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserMinus />
+                  Time-out
+                </h2>
+                <Badge className="font-mono" size="lg" variant="info">
+                  {student.data.timeout ? student.data.timeout : "—"}
+                </Badge>
+              </FramePanel>
+            </span>
+            <FrameFooter className="flex items-center justify-end">
+              <p className="text-muted-foreground text-sm">
+                <Button onClick={() => tabs.setValue("2")}>
+                  See full Records
+                  <ArrowUpRight />
+                </Button>
+              </p>
+            </FrameFooter>
+          </Frame>{" "}
+          <Frame className="w-full">
+            <FrameHeader>
+              <FrameTitle className="flex items-center gap-2">
+                <BadgeInfo />
+                Today's Timestamp
+              </FrameTitle>
+              <FrameDescription>Timestamp for {student.name}</FrameDescription>
+            </FrameHeader>
+            <span className="grid grid-cols-2">
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserCheck />
+                  Time-in
+                </h2>
+                <Badge className="font-mono" size="lg" variant="success">
+                  {student.data.timein ? student.data.timein : "—"}
+                </Badge>
+              </FramePanel>
+              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                <h2 className="flex items-center gap-2 font-semibold text-sm">
+                  <UserMinus />
+                  Time-out
+                </h2>
+                <Badge className="font-mono" size="lg" variant="info">
+                  {student.data.timeout ? student.data.timeout : "—"}
+                </Badge>
+              </FramePanel>
+            </span>
+            <FrameFooter className="flex items-center justify-end">
+              <p className="text-muted-foreground text-sm">
+                <Button onClick={() => tabs.setValue("2")}>
+                  See full Records
+                  <ArrowUpRight />
+                </Button>
+              </p>
+            </FrameFooter>
+          </Frame>{" "}
         </>
       ) : (
         <p>No student selected</p>
@@ -235,7 +304,7 @@ const SelectStudent = ({
       onValueChange={onValueChange}
       value={value ?? students[0]}
     >
-      <SelectTrigger className="rounded-b-xl bg-accent/50 py-6 font-semibold text-md backdrop-blur-md">
+      <SelectTrigger className="rounded-b-xl bg-secondary/50 py-6 font-semibold text-md shadow-2xl shadow-background backdrop-blur-md">
         <SelectValue>
           {(item: Student) => (
             <span className="flex items-center gap-2">
@@ -292,19 +361,15 @@ export default function ParentBoard() {
   const [activeTab, setActiveTab] = useState(navsLink[0]?.id);
 
   return (
-    <section className="flex h-screen w-full flex-col items-center justify-center gap-4 p-4">
-      <Tabs
-        className="w-full items-center justify-start"
-        onValueChange={(e) => setActiveTab(e.value)}
-        value={activeTab}
-      >
+    <section className="flex flex-col items-center justify-center gap-4 p-4">
+      <Tabs onValueChange={(e) => setActiveTab(e.value)} value={activeTab}>
         {navsLink.map((nav) => (
-          <TabsContent key={nav.id} value={nav.id}>
+          <TabsContent className="pb-36 sm:pb-0" key={nav.id} value={nav.id}>
             {nav.component}
           </TabsContent>
         ))}
 
-        <div className="fixed top-auto bottom-4 flex w-full flex-col items-center justify-between gap-2 px-4 transition-all duration-500 sm:w-2xl">
+        <div className="fixed inset-x-0 top-auto bottom-2 mx-auto w-full flex-col items-center justify-between space-y-2 px-4 transition-all duration-500 sm:w-2xl">
           <SelectStudent
             label="Choose a student"
             onValueChange={(student) => {
@@ -317,7 +382,7 @@ export default function ParentBoard() {
           />
           <nav
             className={
-              "flex w-full items-center justify-evenly gap-6 rounded-t-xl rounded-b-4xl bg-accent/50 p-4 backdrop-blur-md"
+              "flex w-full items-center justify-evenly gap-6 rounded-t-xl rounded-b-4xl bg-secondary/50 p-4 shadow-2xl shadow-background backdrop-blur-md"
             }
           >
             <TabsList>
