@@ -57,6 +57,13 @@
       "when": 1782148681109,
       "tag": "0007_sloppy_inhumans",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784379284945,
+      "tag": "0008_brown_red_ghost",
+      "breakpoints": true
     }
   ]
 }

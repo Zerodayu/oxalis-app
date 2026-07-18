@@ -6,6 +6,7 @@ import {
   boolean,
   index,
   serial,
+  varchar,
 } from "drizzle-orm/pg-core";
 export const user = pgTable("user", {
   id: serial("id").primaryKey(),
@@ -21,6 +22,8 @@ export const user = pgTable("user", {
     .notNull(),
   role: text("role").array().default(["parent"]).notNull(),
   plan: text("plan").default("free").notNull(),
+  phoneNumber: varchar("phone_number", { length: 255 }).unique(),
+  phoneNumberVerified: boolean("phone_number_verified"),
 });
 
 export const session = pgTable(
