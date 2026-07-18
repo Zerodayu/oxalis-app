@@ -73,8 +73,8 @@ import { type Student, studentLists, user } from "@/utils/types/student-types";
 const HomeTab = ({ student }: { student: Student | undefined }) => {
   const tabs = useTabs();
   return (
-    <section className="flex w-screen flex-col justify-center gap-6 px-4 sm:w-4xl">
-      <div className="grid w-full grid-cols-1 gap-6">
+    <section className="flex w-screen flex-col justify-center gap-4 px-4 sm:w-4xl">
+      <div className="grid w-full grid-cols-1">
         <Frame className="w-full">
           <FrameHeader>
             <FrameTitle className="flex items-center gap-2">
@@ -117,7 +117,7 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
         </Frame>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
         {student ? (
           <>
             <Frame className="w-full">
