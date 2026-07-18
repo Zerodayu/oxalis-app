@@ -115,9 +115,7 @@ export default function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>
-                    {tabLabels[activeHash] ?? "Unknown"}
-                  </BreadcrumbPage>
+                  <BreadcrumbPage>{tabLabels[activeHash]}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -202,7 +200,9 @@ export default function Page() {
           )}
           {activeHash === "#class-record" && (
             <section id="models">
-              <p>Class Record content</p>
+              <CardSection className="flex flex-col items-center justify-center">
+                <TableSection users={studentList} />
+              </CardSection>
             </section>
           )}
           {activeHash === "#docs" && (
