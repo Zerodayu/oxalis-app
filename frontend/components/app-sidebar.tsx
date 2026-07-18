@@ -3,14 +3,14 @@
 import {
   AudioLinesIcon,
   BookOpenIcon,
-  BotIcon,
   GalleryVerticalEndIcon,
+  LayoutDashboard,
   Settings2Icon,
+  Sheet,
   TerminalIcon,
-  TerminalSquareIcon,
 } from "lucide-react";
 import type * as React from "react";
-import { useEffect, useState } from "react";
+import { useHash } from "@/hooks/use-hash";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Playground", url: "#board", icon: <TerminalSquareIcon /> },
-  { title: "Models", url: "#models", icon: <BotIcon /> },
+  { title: "Dashboard", url: "#board", icon: <LayoutDashboard /> },
+  { title: "Class Record", url: "#class-record", icon: <Sheet /> },
   { title: "Documentation", url: "#docs", icon: <BookOpenIcon /> },
   { title: "Settings", url: "#settings", icon: <Settings2Icon /> },
 ];
@@ -56,14 +56,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [activeHash, setActiveHash] = useState("#board");
-
-  useEffect(() => {
-    const onHashChange = () => setActiveHash(window.location.hash || "#board");
-    onHashChange();
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, []);
+  const activeHash = useHash();
 
   const items = navItems.map((item) => ({
     ...item,

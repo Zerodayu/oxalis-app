@@ -27,8 +27,8 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible
             className="group/collapsible"
-            defaultOpen={item.isActive}
             key={item.title}
+            open={item.isActive}
             render={<SidebarMenuItem />}
           >
             <CollapsibleTrigger
