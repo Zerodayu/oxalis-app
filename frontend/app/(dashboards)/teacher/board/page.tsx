@@ -111,7 +111,7 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex w-full flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex w-full flex-1 flex-col gap-4 p-4 pt-0" id="board">
           <div className="grid gap-4 md:grid-cols-1">
             <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <CardSection className="flex flex-col items-center justify-center">
