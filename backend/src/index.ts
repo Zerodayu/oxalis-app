@@ -5,6 +5,7 @@ import { env } from "@env";
 import { auth } from "./auth/service";
 import { OpenAPI } from "./auth/controller";
 import { apiRoutes } from "./routes";
+import { wsRoutes } from "./ws/handler";
 import { cors } from "@elysiajs/cors";
 
 const app = new Elysia()
@@ -34,6 +35,7 @@ const app = new Elysia()
   })
   .mount(auth.handler)
   .use(apiRoutes)
+  .use(wsRoutes)
   .listen(8080);
 
 console.log(

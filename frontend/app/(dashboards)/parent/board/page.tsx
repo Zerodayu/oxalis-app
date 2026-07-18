@@ -94,7 +94,8 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
                   </p>
                 </h2>
               </div>
-              <Prose className="flex w-full flex-col gap-8">
+              <Prose className="flex w-full flex-col pt-6">
+                <h3>The Joke Tax</h3>
                 <blockquote>
                   "After all," he said, "everyone enjoys a good joke, so it's
                   only fair that they should pay for the privilege."
@@ -304,12 +305,12 @@ const MemoTab = () => (
               <p className="text-muted-foreground text-xs">— teacher name</p>
             </h2>
           </div>
-          <Prose className="flex w-full flex-col gap-8">
+          <Prose className="flex w-full flex-col pt-6">
+            <h3>The Joke Tax</h3>
             <blockquote>
               "After all," he said, "everyone enjoys a good joke, so it's only
               fair that they should pay for the privilege."
             </blockquote>
-            {/* <code className="self-end">until: Jul 28</code> */}
             <Badge className="w-fit self-end" size="md" variant="info">
               Ongoing — Jul 28
             </Badge>

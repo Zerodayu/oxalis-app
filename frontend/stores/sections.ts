@@ -31,6 +31,12 @@ interface SectionsStore {
   loading: boolean;
   sections: Section[];
   setSections: (sections: Section[]) => void;
+  updateStudentAttendance: (data: {
+    studentId: number;
+    timeIn: string | null;
+    timeOut: string | null;
+    date: string;
+  }) => void;
 }
 
 export const useSectionsStore = create<SectionsStore>((set) => ({
@@ -54,4 +60,32 @@ export const useSectionsStore = create<SectionsStore>((set) => ({
   },
 
   setSections: (sections) => set({ sections, lastFetched: Date.now() }),
+
+  updateStudentAttendance: (data) =>
+    set((state) => ({
+      sections: state.sections.map((sec) => ({
+        ...sec,
+        students: sec.students.map((s) =>
+          s.id === data.studentId
+            ? {
+                ...s,
+                attendance: upsertAttendance(s.attendance, data),
+              }
+            : s,
+        ),
+      })),
+    })),
 }));
+
+function upsertAttendance(
+  list: Attendance[],
+  update: { date: string; timeIn: string | null; timeOut: string | null },
+): Attendance[] {
+  const idx = list.findIndex((a) => a.date === update.date);
+  if (idx === -1) {
+    return [...list, { date: update.date, id: 0, timeIn: update.timeIn, timeOut: update.timeOut }];
+  }
+  const next = [...list];
+  next[idx] = { ...next[idx], timeIn: update.timeIn, timeOut: update.timeOut };
+  return next;
+}

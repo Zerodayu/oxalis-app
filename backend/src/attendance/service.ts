@@ -1,7 +1,8 @@
 import { db } from "@drizzle";
-import { attendance, student } from "@drizzle/schema";
+import { attendance, student, parentStudent } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { sendPushToParent } from "./push-sender";
+import { broadcastToUsers } from "@/ws/pubsub";
 
 export class attendanceService {
   async markTimeIn(studentId: number, teacherId: number) {
@@ -34,6 +35,19 @@ export class attendanceService {
     }
 
     await sendPushToParent(studentId, stud.name, "in");
+
+    const parents = await db.query.parentStudent.findMany({
+      where: eq(parentStudent.studentId, studentId),
+    });
+    const parentIds = parents.map((p) => p.parentId);
+    broadcastToUsers([teacherId, ...parentIds], {
+      type: "attendance:updated",
+      studentId,
+      timeIn: record.timeIn?.toISOString() ?? null,
+      timeOut: record.timeOut?.toISOString() ?? null,
+      date: today,
+    });
+
     return record;
   }
 
@@ -61,6 +75,19 @@ export class attendanceService {
       .returning();
 
     await sendPushToParent(studentId, stud.name, "out");
+
+    const parents = await db.query.parentStudent.findMany({
+      where: eq(parentStudent.studentId, studentId),
+    });
+    const parentIds = parents.map((p) => p.parentId);
+    broadcastToUsers([teacherId, ...parentIds], {
+      type: "attendance:updated",
+      studentId,
+      timeIn: record.timeIn?.toISOString() ?? null,
+      timeOut: record.timeOut?.toISOString() ?? null,
+      date: today,
+    });
+
     return record;
   }
 }

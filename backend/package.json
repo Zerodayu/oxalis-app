@@ -16,6 +16,7 @@
     "@dotenvx/dotenvx": "^1.75.0",
     "@elysiajs/cors": "^1.4.2",
     "@elysiajs/openapi": "^1.4.15",
+    "@elysiajs/websocket": "^0.2.8",
     "@neondatabase/serverless": "^1.1.0",
     "better-auth": "^1.6.20",
     "drizzle-orm": "^0.45.2",

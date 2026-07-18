@@ -10,18 +10,19 @@ The backend is a RESTful API built with ElysiaJS, using better-auth for authenti
 
 ## Technology Stack
 
-| Layer      | Technology            | Purpose                                           |
-| ---------- | --------------------- | ------------------------------------------------- |
-| Runtime    | **Bun**               | JavaScript runtime & package manager              |
-| Framework  | **ElysiaJS**          | Type-safe HTTP framework                          |
-| Auth       | **better-auth**       | Session-based auth with email/password + username |
-| ORM        | **Drizzle ORM**       | Type-safe SQL ORM for PostgreSQL                  |
-| Database   | **Neon (PostgreSQL)** | Serverless Postgres                               |
-| Push       | **web-push**          | Web Push API (VAPID) notifications                |
-| Validation | **Elysia `t`**        | Runtime request/response validation               |
-| Env        | **dotenvx**           | Encrypted environment variable management         |
-| CORS       | **@elysiajs/cors**    | Cross-origin support                              |
-| Docs       | **@elysiajs/openapi** | OpenAPI/Swagger documentation                     |
+| Layer       | Technology                 | Purpose                                           |
+| ----------- | --------------------------| ------------------------------------------------- |
+| Runtime     | **Bun**                   | JavaScript runtime & package manager              |
+| Framework   | **ElysiaJS**              | Type-safe HTTP framework + built-in WebSocket     |
+| Auth        | **better-auth**           | Session-based auth with email/password + username |
+| ORM         | **Drizzle ORM**           | Type-safe SQL ORM for PostgreSQL                  |
+| Database    | **Neon (PostgreSQL)**     | Serverless Postgres                               |
+| Real-time   | **ElysiaWS (built-in)**   | WebSocket for realtime attendance push            |
+| Push        | **web-push**              | Web Push API (VAPID) notifications                |
+| Validation  | **Elysia `t`**            | Runtime request/response validation               |
+| Env         | **dotenvx**               | Encrypted environment variable management         |
+| CORS        | **@elysiajs/cors**        | Cross-origin support                              |
+| Docs        | **@elysiajs/openapi**     | OpenAPI/Swagger documentation                     |
 
 ---
 
@@ -84,6 +85,9 @@ backend/
         ├── controller.ts          # GET/POST/DELETE /subscriptions
         ├── service.ts             # pushService
         └── model.ts               # Validation schemas
+    └── ws/
+        ├── handler.ts             # WebSocket route (/ws) with session-based auth
+        └── pubsub.ts              # User-scoped pub/sub registry for broadcasting
 ```
 
 ---
@@ -91,53 +95,54 @@ backend/
 ## System Architecture
 
 ```
-┌──────────────┐     HTTP      ┌─────────────────────────────────────┐
-│   Frontend   │ ──────────▶   │         Bun HTTP Server             │
-│  (React/??)  │ ◀──────────   │          (port 8080)                │
-└──────────────┘               │              │                      │
-                               │              ▼                      │
-                               │    ┌─────────────────┐              │
-                               │    │  CORS Middleware │              │
-                               │    └────────┬────────┘              │
-                               │             │                       │
-                               │             ▼                       │
-                               │    ┌─────────────────┐              │
-                               │    │  Elysia Router   │              │
-                               │    └──┬─────┬───────┬┘              │
-                               │       │     │       │               │
-                               │       ▼     ▼       ▼               │
-                               │   GET /  /auth/*  /api/v1/*         │
-                               │   (health) (better-  (apiRoutes)    │
-                               │             auth)       │           │
-                               │                       authPlugin    │
-                               │                     (session guard) │
-                               │                         │           │
-                               │                    ┌────▼────────┐  │
-                               │                    │  Controller │  │
-                               │                    │  (route hdlr)│  │
-                               │                    └────┬────────┘  │
-                               │                         │           │
-                               │                    ┌────▼────────┐  │
-                               │                    │   Service    │  │
-                               │                    │  (business   │  │
-                               │                    │   logic)     │  │
-                               │                    └──┬────┬─────┘  │
-                               │                       │    │        │
-                               │                       ▼    ▼        │
-                               │               Drizzle ORM  web-push │
-                               │                       │             │
-                               └───────────────────────┼─────────────┘
-                                                       │
-                                               ┌───────▼────────┐
-                                               │   PostgreSQL    │
-                                               │  (Neon Server-  │
-                                               │    less)        │
-                                               └────────────────┘
+┌──────────────┐     HTTP/WS   ┌──────────────────────────────────────────┐
+│   Frontend   │ ──────────▶   │         Bun HTTP/WS Server               │
+│  (React/??)  │ ◀──────────   │          (port 8080)                     │
+└──────────────┘               │              │                           │
+                               │         ┌────┴────┐                      │
+                               │         │  CORS   │    WebSocket         │
+                               │         └────┬────┘    (ws:///ws)        │
+                               │              │            │              │
+                               │              ▼            ▼              │
+                               │    ┌────────────────┐ ┌──────────┐       │
+                               │    │ Elysia Router  │ │ WS Auth  │       │
+                               │    └──┬─────┬──────┬┘ │(session) │       │
+                               │       │     │      │  └────┬─────┘       │
+                               │       ▼     ▼      ▼       │             │
+                               │   GET /  /auth/*  /api/v1/* │             │
+                               │  (health) (better-  (apiRts) │            │
+                               │            auth)      │     │            │
+                               │                  authPlugin │             │
+                               │                (session guard)│           │
+                               │                    │        │             │
+                               │              ┌────▼──┐  ┌──▼─────────┐  │
+                               │              │Control│  │  pubsub.ts  │  │
+                               │              │(route)│  │(broadcast)  │  │
+                               │              └────┬──┘  └──────┬──────┘  │
+                               │                   │            │         │
+                               │              ┌────▼──────┐    │         │
+                               │              │  Service  │◄───┘         │
+                               │              │ (business │              │
+                               │              │  logic)   │              │
+                               │              └──┬────┬───┘              │
+                               │                 │    │                  │
+                               │                 ▼    ▼                  │
+                               │         Drizzle ORM  web-push           │
+                               │                 │                       │
+                               └─────────────────┼───────────────────────┘
+                                                  │
+                                          ┌───────▼────────┐
+                                          │   PostgreSQL    │
+                                          │  (Neon Server-  │
+                                          │    less)        │
+                                          └────────────────┘
 ```
 
 ---
 
 ## Request Flow
+
+### HTTP Request Flow
 
 1. **HTTP Request** arrives at Bun HTTP Server (port 8080).
 2. **CORS middleware** (`@elysiajs/cors`) adds CORS headers — origin `http://localhost:3001`, credentials enabled.
@@ -155,7 +160,43 @@ backend/
    - **Plan check**: teacher routes also verify `session.user.plan !== "free"` — teachers must have Essential or Premium.
    - **Service method** called: performs business logic via Drizzle ORM queries against Neon PostgreSQL.
    - **Push notification** (optional): attendance service calls `sendPushToParent()` → `web-push` dispatches to parent browsers.
+   - **WebSocket broadcast** (optional): attendance/student services call `broadcastToUsers()` → pushes realtime update to connected WS clients.
 7. **JSON response** returned.
+
+### WebSocket Flow
+
+1. **Client** opens `new WebSocket("ws://host/ws")` (uses same-origin cookies for auth).
+2. **Elysia `ws()` handler** receives the upgrade request and calls `open(ws)`.
+3. **Session auth**: the handler calls `auth.api.getSession({ headers })` using the upgrade request's `Cookie` header.
+   - No valid session → `ws.close()` immediately.
+   - Valid session → `ws.data.userId` is set, user is `subscribe()`d to the pub/sub registry.
+4. **Keepalive**: client sends `{ type: "ping" }` → server responds `{ type: "pong" }`.
+5. **Realtime updates** (server → client, pushed as JSON):
+   - `{ type: "attendance:updated", studentId, timeIn, timeOut, date }` — sent when a teacher marks time-in/time-out. Recipients: the teacher who performed the action + all parents linked to that student.
+
+6. **Disconnect**: `close` handler calls `unsubscribe()` to remove the connection from the pub/sub registry. Client auto-reconnects with exponential backoff (1s → 30s max).
+
+### Pub/Sub Architecture
+
+```
+attendanceService         broadcastToUsers([teacherId, ...parentIds], message)
+       │                                │
+       │                                ▼
+       │                     ┌──────────────────┐
+       │                     │   pubsub.ts      │
+       │                     │  Map<userId,     │
+       │                     │   Set<ElysiaWS>> │
+       │                     └──────┬───┬───────┘
+       │                            │   │
+       ▼                            ▼   ▼
+  Web Push                    ┌──────────────┐
+  (push-sender.ts)            │  ws handler  │
+                              │  per-user    │
+                              │  ElysiaWS    │
+                              └──────────────┘
+                                    │
+                                    ▼
+                              Client Browser
 
 ---
 
@@ -418,6 +459,26 @@ subscriptionStatusEnum = pgEnum("subscription_status", [
 
 All routes under `/api/v1/*` require authentication (session cookie/token) unless noted. The auth macro automatically returns `401` for unauthenticated requests.
 
+### WebSocket — `{base}/ws`
+
+| Protocol   | Path | Auth | Description                                                    |
+| ---------- | ---- | ---- | -------------------------------------------------------------- |
+| WebSocket  | /ws  | Yes  | Session-based auth via upgrade cookie. Pushes `attendance:updated` events in realtime. |
+
+**Server → Client messages:**
+```typescript
+// Attendance was marked
+{ type: "attendance:updated", studentId: number, timeIn: string|null, timeOut: string|null, date: string }
+
+
+```
+
+**Client → Server messages:**
+```typescript
+// Keepalive ping
+{ type: "ping" }
+```
+
 ### Auth — `{base}/api/v1/auth/*`
 
 These routes are generated by better-auth. Paths are remapped from `/auth/*` to `/api/v1/auth/*` in the OpenAPI documentation.
@@ -527,6 +588,14 @@ These routes are generated by better-auth. Paths are remapped from `/auth/*` to 
 | `meetsMinimumPlan(userPlan, minimum)`      | Checks if `userPlan` >= `minimum` using hierarchy (`free` < `essential` < `premium`). |
 | `hasFeatureAccess(userPlan, featureKey)`   | Queries `plan_feature` table to check if a feature is enabled for the plan.   |
 | `getEnabledFeatures(userPlan)`             | Returns all enabled feature keys for a given plan.                            |
+
+### `pubsub` (`src/ws/pubsub.ts`)
+
+| Function                                   | Description                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `subscribe(userId, ws)`                    | Registers a WebSocket connection for a user. Multiple connections per user = multiple tabs.   |
+| `unsubscribe(userId, ws)`                  | Removes a specific WebSocket connection.                                                      |
+| `broadcastToUsers(userIds, message)`       | Sends a JSON message to all open WebSocket connections for the given user IDs (teacher + parents). |
 
 ### `subscriptionService` (`src/subscription/service.ts`)
 
