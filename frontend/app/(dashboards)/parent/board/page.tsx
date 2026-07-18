@@ -13,11 +13,12 @@ import {
   LogOutIcon,
   Megaphone,
   NotebookTabs,
+  Radio,
   SparklesIcon,
+  SquareDashedText,
   UserCheck,
   UserMinus,
 } from "lucide-react";
-import type React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Tabs,
   TabsContent,
@@ -89,7 +99,9 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
                   "After all," he said, "everyone enjoys a good joke, so it's
                   only fair that they should pay for the privilege."
                 </blockquote>
-                <code className="self-end">until: Jul 28</code>
+                <Badge className="w-fit self-end" size="md" variant="info">
+                  Ongoing — Jul 28
+                </Badge>
               </Prose>
             </FramePanel>
           </span>
@@ -233,19 +245,53 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
   );
 };
 
-const RecordsTab = () => (
-  <section>
-    <div>Student Records Tab</div>
+const RecordsTab = ({ student }: { student: Student | undefined }) => (
+  <section className="w-screen max-w-4xl px-4">
+    <Frame className="w-full">
+      <FrameHeader>
+        <FrameTitle className="flex items-center gap-2">
+          <SquareDashedText />
+          Student Records
+        </FrameTitle>
+        <FrameDescription>{student?.name} Records</FrameDescription>
+      </FrameHeader>
+      <FramePanel>
+        {student ? (
+          <Table className="w-full" isHoverable={false}>
+            <TableCaption className="sr-only">
+              Table with row hover disabled (isHoverable=false).
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Time-in</TableHead>
+                <TableHead>Time-out</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {studentLists.map((student) => (
+                <TableRow key={student.id}>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.data.timein}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p>No Student Selected</p>
+        )}
+      </FramePanel>
+    </Frame>
   </section>
 );
 
 const MemoTab = () => (
-  <section>
+  <section className="w-screen max-w-4xl px-4">
     <Frame className="w-full">
       <FrameHeader>
         <FrameTitle className="flex items-center gap-2">
-          <Megaphone />
-          Announcements
+          <Radio />
+          Memo's
         </FrameTitle>
         <FrameDescription>View All Memo's below</FrameDescription>
       </FrameHeader>
@@ -263,7 +309,10 @@ const MemoTab = () => (
               "After all," he said, "everyone enjoys a good joke, so it's only
               fair that they should pay for the privilege."
             </blockquote>
-            <code className="self-end">until: Jul 28</code>
+            {/* <code className="self-end">until: Jul 28</code> */}
+            <Badge className="w-fit self-end" size="md" variant="info">
+              Ongoing — Jul 28
+            </Badge>
           </Prose>
         </FramePanel>
       </span>
@@ -423,7 +472,7 @@ export default function ParentBoard() {
       id: "2",
       label: "Records",
       icon: <NotebookTabs />,
-      component: <RecordsTab />,
+      component: <RecordsTab student={selectedStudent} />,
     },
     {
       id: "3",
