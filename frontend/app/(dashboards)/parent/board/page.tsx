@@ -8,6 +8,7 @@ import {
   BellIcon,
   ChevronsUpDownIcon,
   CreditCardIcon,
+  Goal,
   House,
   LogOutIcon,
   Megaphone,
@@ -39,6 +40,7 @@ import {
   FramePanel,
   FrameTitle,
 } from "@/components/ui/frame";
+import { Prose } from "@/components/ui/prose";
 import {
   Select,
   SelectContent,
@@ -61,126 +63,172 @@ import { type Student, studentLists, user } from "@/utils/types/student-types";
 const HomeTab = ({ student }: { student: Student | undefined }) => {
   const tabs = useTabs();
   return (
-    <section className="grid w-screen grid-cols-1 gap-6 px-4 sm:w-4xl sm:grid-cols-2">
-      {student ? (
-        <>
-          <Frame className="w-full">
-            <FrameHeader>
-              <FrameTitle className="flex items-center gap-2">
-                <BadgeInfo />
-                Today's Timestamp
-              </FrameTitle>
-              <FrameDescription>
-                Attendance of <u>{student.name}</u> for today
-              </FrameDescription>
-            </FrameHeader>
-            <span className="grid grid-cols-2">
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserCheck />
-                  Time-in
+    <section className="flex w-screen flex-col justify-center gap-6 px-4 sm:w-4xl">
+      <div className="grid w-full grid-cols-1 gap-6">
+        <Frame className="w-full">
+          <FrameHeader>
+            <FrameTitle className="flex items-center gap-2">
+              <Megaphone />
+              Announcements
+            </FrameTitle>
+            <FrameDescription>Recent Memo's below</FrameDescription>
+          </FrameHeader>
+          <span className="grid grid-cols-1 gap-2">
+            <FramePanel className="flex flex-col justify-center">
+              <div className="flex items-center gap-2 text-primary">
+                <Goal size={28} />
+                <h2 className="flex flex-col items-center justify-start font-semibold">
+                  section-name
+                  <p className="text-muted-foreground text-xs">
+                    — teacher name
+                  </p>
                 </h2>
-                <Badge className="font-mono" size="lg" variant="success">
-                  {student.data.timein ? student.data.timein : "—"}
-                </Badge>
-              </FramePanel>
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserMinus />
-                  Time-out
-                </h2>
-                <Badge className="font-mono" size="lg" variant="info">
-                  {student.data.timeout ? student.data.timeout : "—"}
-                </Badge>
-              </FramePanel>
-            </span>
-            <FrameFooter className="flex items-center justify-end">
-              <p className="text-muted-foreground text-sm">
-                <Button onClick={() => tabs.setValue("2")}>
-                  See full Records
-                  <ArrowUpRight />
-                </Button>
-              </p>
-            </FrameFooter>
-          </Frame>
-          <Frame className="w-full">
-            <FrameHeader>
-              <FrameTitle className="flex items-center gap-2">
-                <BadgeInfo />
-                Today's Timestamp
-              </FrameTitle>
-              <FrameDescription>Timestamp for {student.name}</FrameDescription>
-            </FrameHeader>
-            <span className="grid grid-cols-2">
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserCheck />
-                  Time-in
-                </h2>
-                <Badge className="font-mono" size="lg" variant="success">
-                  {student.data.timein ? student.data.timein : "—"}
-                </Badge>
-              </FramePanel>
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserMinus />
-                  Time-out
-                </h2>
-                <Badge className="font-mono" size="lg" variant="info">
-                  {student.data.timeout ? student.data.timeout : "—"}
-                </Badge>
-              </FramePanel>
-            </span>
-            <FrameFooter className="flex items-center justify-end">
-              <p className="text-muted-foreground text-sm">
-                <Button onClick={() => tabs.setValue("2")}>
-                  See full Records
-                  <ArrowUpRight />
-                </Button>
-              </p>
-            </FrameFooter>
-          </Frame>{" "}
-          <Frame className="w-full">
-            <FrameHeader>
-              <FrameTitle className="flex items-center gap-2">
-                <BadgeInfo />
-                Today's Timestamp
-              </FrameTitle>
-              <FrameDescription>Timestamp for {student.name}</FrameDescription>
-            </FrameHeader>
-            <span className="grid grid-cols-2">
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserCheck />
-                  Time-in
-                </h2>
-                <Badge className="font-mono" size="lg" variant="success">
-                  {student.data.timein ? student.data.timein : "—"}
-                </Badge>
-              </FramePanel>
-              <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
-                <h2 className="flex items-center gap-2 font-semibold text-sm">
-                  <UserMinus />
-                  Time-out
-                </h2>
-                <Badge className="font-mono" size="lg" variant="info">
-                  {student.data.timeout ? student.data.timeout : "—"}
-                </Badge>
-              </FramePanel>
-            </span>
-            <FrameFooter className="flex items-center justify-end">
-              <p className="text-muted-foreground text-sm">
-                <Button onClick={() => tabs.setValue("2")}>
-                  See full Records
-                  <ArrowUpRight />
-                </Button>
-              </p>
-            </FrameFooter>
-          </Frame>{" "}
-        </>
-      ) : (
-        <p>No student selected</p>
-      )}
+              </div>
+              <Prose className="flex w-full flex-col gap-8">
+                <blockquote>
+                  "After all," he said, "everyone enjoys a good joke, so it's
+                  only fair that they should pay for the privilege."
+                </blockquote>
+                <code className="self-end">until: Jul 28</code>
+              </Prose>
+            </FramePanel>
+          </span>
+          <FrameFooter className="flex items-center justify-end">
+            <p className="text-muted-foreground text-sm">
+              <Button onClick={() => tabs.setValue("3")}>
+                See all memo's
+                <ArrowUpRight />
+              </Button>
+            </p>
+          </FrameFooter>
+        </Frame>
+      </div>
+
+      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
+        {student ? (
+          <>
+            <Frame className="w-full">
+              <FrameHeader>
+                <FrameTitle className="flex items-center gap-2">
+                  <BadgeInfo />
+                  Today's Timestamp
+                </FrameTitle>
+                <FrameDescription>
+                  Attendance of <u>{student.name}</u> for today
+                </FrameDescription>
+              </FrameHeader>
+              <span className="grid grid-cols-2">
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserCheck />
+                    Time-in
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="success">
+                    {student.data.timein ? student.data.timein : "—"}
+                  </Badge>
+                </FramePanel>
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserMinus />
+                    Time-out
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="info">
+                    {student.data.timeout ? student.data.timeout : "—"}
+                  </Badge>
+                </FramePanel>
+              </span>
+              <FrameFooter className="flex items-center justify-end">
+                <p className="text-muted-foreground text-sm">
+                  <Button onClick={() => tabs.setValue("2")}>
+                    See full Records
+                    <ArrowUpRight />
+                  </Button>
+                </p>
+              </FrameFooter>
+            </Frame>
+            <Frame className="w-full">
+              <FrameHeader>
+                <FrameTitle className="flex items-center gap-2">
+                  <BadgeInfo />
+                  Today's Timestamp
+                </FrameTitle>
+                <FrameDescription>
+                  Timestamp for {student.name}
+                </FrameDescription>
+              </FrameHeader>
+              <span className="grid grid-cols-2">
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserCheck />
+                    Time-in
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="success">
+                    {student.data.timein ? student.data.timein : "—"}
+                  </Badge>
+                </FramePanel>
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserMinus />
+                    Time-out
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="info">
+                    {student.data.timeout ? student.data.timeout : "—"}
+                  </Badge>
+                </FramePanel>
+              </span>
+              <FrameFooter className="flex items-center justify-end">
+                <p className="text-muted-foreground text-sm">
+                  <Button onClick={() => tabs.setValue("2")}>
+                    See full Records
+                    <ArrowUpRight />
+                  </Button>
+                </p>
+              </FrameFooter>
+            </Frame>{" "}
+            <Frame className="w-full">
+              <FrameHeader>
+                <FrameTitle className="flex items-center gap-2">
+                  <BadgeInfo />
+                  Today's Timestamp
+                </FrameTitle>
+                <FrameDescription>
+                  Timestamp for {student.name}
+                </FrameDescription>
+              </FrameHeader>
+              <span className="grid grid-cols-2">
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-success">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserCheck />
+                    Time-in
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="success">
+                    {student.data.timein ? student.data.timein : "—"}
+                  </Badge>
+                </FramePanel>
+                <FramePanel className="flex flex-col items-center justify-center gap-4 text-info">
+                  <h2 className="flex items-center gap-2 font-semibold text-sm">
+                    <UserMinus />
+                    Time-out
+                  </h2>
+                  <Badge className="font-mono" size="lg" variant="info">
+                    {student.data.timeout ? student.data.timeout : "—"}
+                  </Badge>
+                </FramePanel>
+              </span>
+              <FrameFooter className="flex items-center justify-end">
+                <p className="text-muted-foreground text-sm">
+                  <Button onClick={() => tabs.setValue("2")}>
+                    See full Records
+                    <ArrowUpRight />
+                  </Button>
+                </p>
+              </FrameFooter>
+            </Frame>{" "}
+          </>
+        ) : (
+          <p>No student selected</p>
+        )}
+      </div>
     </section>
   );
 };
@@ -193,7 +241,33 @@ const RecordsTab = () => (
 
 const MemoTab = () => (
   <section>
-    <div>Announcements Tab</div>
+    <Frame className="w-full">
+      <FrameHeader>
+        <FrameTitle className="flex items-center gap-2">
+          <Megaphone />
+          Announcements
+        </FrameTitle>
+        <FrameDescription>View All Memo's below</FrameDescription>
+      </FrameHeader>
+      <span className="grid grid-cols-1 gap-2">
+        <FramePanel className="flex flex-col justify-center">
+          <div className="flex items-center gap-2 text-primary">
+            <Goal size={28} />
+            <h2 className="flex flex-col items-center justify-start font-semibold">
+              section-name
+              <p className="text-muted-foreground text-xs">— teacher name</p>
+            </h2>
+          </div>
+          <Prose className="flex w-full flex-col gap-8">
+            <blockquote>
+              "After all," he said, "everyone enjoys a good joke, so it's only
+              fair that they should pay for the privilege."
+            </blockquote>
+            <code className="self-end">until: Jul 28</code>
+          </Prose>
+        </FramePanel>
+      </span>
+    </Frame>
   </section>
 );
 
@@ -364,7 +438,7 @@ export default function ParentBoard() {
     <section className="flex flex-col items-center justify-center gap-4 p-4">
       <Tabs onValueChange={(e) => setActiveTab(e.value)} value={activeTab}>
         {navsLink.map((nav) => (
-          <TabsContent className="pb-36 sm:pb-0" key={nav.id} value={nav.id}>
+          <TabsContent className="pb-36" key={nav.id} value={nav.id}>
             {nav.component}
           </TabsContent>
         ))}
