@@ -52,6 +52,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Status } from "@/components/ui/status";
 import {
   Table,
   TableBody,
@@ -101,6 +102,7 @@ const HomeTab = ({ student }: { student: Student | undefined }) => {
                   only fair that they should pay for the privilege."
                 </blockquote>
                 <Badge className="w-fit self-end" size="md" variant="info">
+                  <Status size="sm" variant="info" />
                   Ongoing — Jul 28
                 </Badge>
               </Prose>
@@ -312,6 +314,7 @@ const MemoTab = () => (
               fair that they should pay for the privilege."
             </blockquote>
             <Badge className="w-fit self-end" size="md" variant="info">
+              <Status size="sm" variant="info" />
               Ongoing — Jul 28
             </Badge>
           </Prose>
