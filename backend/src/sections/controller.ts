@@ -1,10 +1,10 @@
 import { Elysia, t } from "elysia";
-import { sectionService } from "./service";
+import { SectionService } from "./service";
 import { sectionModel } from "./model";
 import { authPlugin } from "../auth/controller";
 import { requireTeacherPlan } from "@lib/guard";
 
-const service = new sectionService();
+const service = new SectionService();
 
 export const sectionRoutes = new Elysia({ prefix: "sections", tags: ["Sections"] })
   .use(authPlugin)
